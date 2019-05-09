@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DashBoard </title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+  <link rel ="stylesheet"  href="style.css">
+</head>
+
+
+<body>
+  <div class="container">
+    <div class="table-responsive">
+      <h1 class="title">Job Applicants Dashboard</h1>
+      <br/>
+      <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search.." title="Type in a name">
+      <table class="table table-bordered " id="applicants_table">
+        <tr>
+          <th>Id</th>
+          <th onclick="sortTable(1)">Name<i id = "arrow_1" class="fas fa-caret-up"></i></th>
+          <th onclick="sortTable(2)">Position<i id = "arrow_2" class="fas fa-caret-up"></i></th>
+          <th>Applied</th>
+          <th>Experience</th>
+
+        </tr>
+      </table>
+      <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Applicant Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+        
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+</html>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $.getJSON("application.json",function(data){
+
+      //console.log(data[0].questions[0].text);
+      var applicant_data = '';
+      $.each(data,function(key,value){
+        applicant_data += '<tr>';
+        applicant_data += '<td>'+value.id+'</td>';
+        applicant_data += '<td >'+'<a id= "'+value.id+'" class="applicantid" data-toggle="modal" data-target="#exampleModal">'+value.name+'</a>'+'</td>';
+        applicant_data += '<td>'+value.position+'</td>';
+        applicant_data += '<td>'+value.applied+'</td>';
+        applicant_data += '<td>'+value.experience+'</td>';
+
+
+      });
+      $('#applicants_table').append(applicant_data);
+    })
+  })
+
+//Function to filtering
+  function myFunction() {
+    var input, filter, ul, li, a, i, txtValue=0;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    //tbody = document.getElementsByTagName("tbody");
+    trow = document.getElementsByTagName("tr");
+    //console.log(li.length);
+    for (i = 1; i < trow.length; i++) {
+        txtValue=0;
+        //console.log(trow[i]);
+        a = trow[i].getElementsByTagName("td");
+        for (j = 1; j < a.length; j++) {
+          //console.log(a[j]);
+          txtValue += a[j].textContent || a[j].innerText;
+          //console.log(txtValue);
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+
+                trow[i].style.display = "";
+            } else {
+                trow[i].style.display = "none";
+            } 
+      }   
+}
+
+}
+
+//Function to Sort
+function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("applicants_table");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("td")[n];
+      //console.log(x);
+      y = rows[i + 1].getElementsByTagName("td")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        console.log("jiii");
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //var test =x.innerHTML.toLowerCase()
+          console.log(x.innerHTML);
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+           $('#arrow_'+n).attr('class','fas fa-caret-down')
+
+          break;
+        }
+      } else if (dir == "desc") {
+        console.log("hiii");
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch = true;
+           $('#arrow_'+n).attr('class','fas fa-caret-up')
+
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+           //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+
+
+      }
+    }
+  }
+}
+</script>
+<script src="script.js"></script>

@@ -1,0 +1,26 @@
+body{
+	background-image: url("http://little-love-photography.com/images/blue-background-images/37445548-blue-background-images.jpg");
+}
+
+.table{
+	background-color: white;
+}
+
+#myInput{
+	float: right;
+	margin-bottom: 10px;
+}
+
+.title{
+	justify-content: center;
+	text-align: center;
+	color: white;
+}
+
+.modal-body{
+	text-align: center;
+}
+
+#availability{
+	display:inline-table;
+}
